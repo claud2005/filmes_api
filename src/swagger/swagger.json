@@ -1,0 +1,239 @@
+        {
+          "openapi": "3.0.0",
+          "info": {
+            "title": "API de Filmes e Atores",
+            "version": "1.0.0",
+            "description": "API REST para gerir Filmes, Atores, Gêneros e Usuários"
+          },
+
+          "components": {
+            "securitySchemes": {
+              "bearerAuth": {
+                "type": "http",
+                "scheme": "bearer",
+                "bearerFormat": "JWT"
+              }
+            }
+          },
+
+          "security": [
+            {
+              "bearerAuth": []
+            }
+          ],
+
+          "tags": [
+            { "name": "Filmes", "description": "Endpoints para gerir filmes" },
+            { "name": "Atores", "description": "Endpoints para gerir atores" },
+            { "name": "Generos", "description": "Endpoints para gerir gêneros" }
+          ],
+
+          "paths": {
+            "/filmes": {
+              "get": {
+                "summary": "Lista todos os filmes no PostgreSQL",
+                "tags": ["Filmes"],
+                "responses": {
+                  "200": { "description": "Lista de filmes" },
+                  "500": { "description": "Erro ao listar filmes" }
+                }
+              },
+              "post": {
+                "summary": "Importa um filme da OMDb para o PostgreSQL e MongoDB",
+                "tags": ["Filmes"],
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "titulo": { "type": "string" }
+                        },
+                        "required": ["titulo"]
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "201": { "description": "Filme importado com sucesso" },
+                  "400": { "description": "Título não fornecido" },
+                  "404": { "description": "Filme não encontrado na OMDb" }
+                }
+              }
+            },
+
+            "/filmes/mongo": {
+              "get": {
+                "summary": "Lista todos os filmes no MongoDB",
+                "tags": ["Filmes"],
+                "responses": {
+                  "200": { "description": "Lista de filmes do MongoDB" },
+                  "500": { "description": "Erro ao listar filmes do MongoDB" }
+                }
+              }
+            },
+
+            "/filmes/mongo/{id}": {
+              "put": {
+                "summary": "Atualiza um filme no MongoDB",
+                "tags": ["Filmes"],
+                "parameters": [
+                  { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+                ],
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "titulo": { "type": "string" },
+                          "ano": { "type": "integer" },
+                          "descricao": { "type": "string" },
+                          "genero": { "type": "string" },
+                          "atores": { "type": "array", "items": { "type": "string" } }
+                        }
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "200": { "description": "Filme atualizado com sucesso" },
+                  "404": { "description": "Filme não encontrado" }
+                }
+              },
+              "delete": {
+                "summary": "Deleta um filme do MongoDB",
+                "tags": ["Filmes"],
+                "parameters": [
+                  { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+                ],
+                "responses": {
+                  "200": { "description": "Filme deletado do MongoDB com sucesso" },
+                  "404": { "description": "Filme não encontrado" }
+                }
+              }
+            },
+
+            "/atores": {
+              "get": {
+                "summary": "Lista todos os atores do PostgreSQL",
+                "tags": ["Atores"],
+                "responses": {
+                  "200": { "description": "Lista de atores" },
+                  "500": { "description": "Erro ao listar atores" }
+                }
+              }
+            },
+
+            "/atores/mongo": {
+              "get": {
+                "summary": "Lista todos os atores no MongoDB",
+                "tags": ["Atores"],
+                "responses": {
+                  "200": { "description": "Lista de atores do MongoDB" },
+                  "500": { "description": "Erro ao listar atores do MongoDB" }
+                }
+              }
+            },
+
+            "/atores/mongo/{id}": {
+              "put": {
+                "summary": "Atualiza um ator no MongoDB",
+                "tags": ["Atores"],
+                "parameters": [
+                  { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+                ],
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "nome": { "type": "string" }
+                        }
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "200": { "description": "Ator atualizado com sucesso" },
+                  "404": { "description": "Ator não encontrado" }
+                }
+              },
+              "delete": {
+                "summary": "Deleta um ator do MongoDB",
+                "tags": ["Atores"],
+                "parameters": [
+                  { "name": "id", "in": "path", "required": true, "schema": { "type": "string" } }
+                ],
+                "responses": {
+                  "200": { "description": "Ator deletado do MongoDB com sucesso" },
+                  "404": { "description": "Ator não encontrado" }
+                }
+              }
+            },
+
+            "/atores/importar": {
+              "post": {
+                "summary": "Importa atores de um filme da OMDb",
+                "tags": ["Atores"],
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "titulo": { "type": "string" },
+                          "atualizarMongo": { "type": "boolean" }
+                        },
+                        "required": ["titulo"]
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "201": { "description": "Atores importados com sucesso" },
+                  "400": { "description": "Título não fornecido" },
+                  "404": { "description": "Filme não encontrado na OMDb" }
+                }
+              }
+            },
+
+            "/generos": {
+              "get": {
+                "summary": "Lista todos os gêneros",
+                "tags": ["Generos"],
+                "responses": {
+                  "200": { "description": "Lista de gêneros" },
+                  "500": { "description": "Erro ao listar gêneros" }
+                }
+              },
+              "post": {
+                "summary": "Cria um novo gênero",
+                "tags": ["Generos"],
+                "requestBody": {
+                  "required": true,
+                  "content": {
+                    "application/json": {
+                      "schema": {
+                        "type": "object",
+                        "properties": {
+                          "nome": { "type": "string" }
+                        },
+                        "required": ["nome"]
+                      }
+                    }
+                  }
+                },
+                "responses": {
+                  "201": { "description": "Gênero criado com sucesso" },
+                  "400": { "description": "Nome inválido ou já existe" }
+                }
+              }
+            }
+          }
+        }
